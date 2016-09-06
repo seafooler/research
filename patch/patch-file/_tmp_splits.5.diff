@@ -1,0 +1,28 @@
+project libcore/
+diff --git a/libart/src/main/java/java/lang/Enum.java b/libart/src/main/java/java/lang/Enum.java
+index f98554a..43ac113 100644
+--- a/libart/src/main/java/java/lang/Enum.java
++++ b/libart/src/main/java/java/lang/Enum.java
+@@ -148,7 +148,7 @@ public abstract class Enum<E extends Enum<E>> implements Serializable, Comparabl
+      * @see java.lang.Comparable
+      */
+     public final int compareTo(E o) {
+-        return ordinal - o.ordinal;
++        return ordinal - o.ordinal();
+     }
+ 
+     /**
+diff --git a/libdvm/src/main/java/java/lang/Enum.java b/libdvm/src/main/java/java/lang/Enum.java
+index 7a0f514..4b897aa 100644
+--- a/libdvm/src/main/java/java/lang/Enum.java
++++ b/libdvm/src/main/java/java/lang/Enum.java
+@@ -147,7 +147,7 @@ public abstract class Enum<E extends Enum<E>> implements Serializable, Comparabl
+      * @see java.lang.Comparable
+      */
+     public final int compareTo(E o) {
+-        return ordinal - o.ordinal;
++        return ordinal - o.ordinal();
+     }
+ 
+     /**
+

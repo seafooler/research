@@ -1,0 +1,90 @@
+diff --git a/kernel/nsproxy.c b/kernel/nsproxy.c
+index ef42d0a..4482bbf 100644
+--- a/kernel/nsproxy.c
++++ b/kernel/nsproxy.c
+@@ -22,6 +22,7 @@
+ #include <linux/pid_namespace.h>
+ #include <net/net_namespace.h>
+ #include <linux/ipc_namespace.h>
++#include <linux/dev_namespace.h>
+ #include <linux/proc_ns.h>
+ #include <linux/file.h>
+ #include <linux/syscalls.h>
+@@ -39,6 +40,7 @@ struct nsproxy init_nsproxy = {
+ #ifdef CONFIG_NET
+ 	.net_ns			= &init_net,
+ #endif
++    .dev_ns         = &init_dev_ns,
+ };
+ 
+ static inline struct nsproxy *create_nsproxy(void)
+@@ -97,9 +99,18 @@ static struct nsproxy *create_new_namespaces(unsigned long flags,
+ 		err = PTR_ERR(new_nsp->net_ns);
+ 		goto out_net;
+ 	}
++    
++    new_nsp->dev_ns = copy_dev_ns(flags, tsk);
++    if(IS_ERR(new_nsp->dev_ns)) {
++        err = PTR_ERR(new_nsp->dev_ns);
++        goto out_dev;
++    }
+ 
+ 	return new_nsp;
+ 
++out_dev:
++    if (new_nsp->net_ns)
++        put_net(new_nsp->net_ns);
+ out_net:
+ 	if (new_nsp->pid_ns_for_children)
+ 		put_pid_ns(new_nsp->pid_ns_for_children);
+@@ -166,6 +177,8 @@ void free_nsproxy(struct nsproxy *ns)
+ 	if (ns->pid_ns_for_children)
+ 		put_pid_ns(ns->pid_ns_for_children);
+ 	put_net(ns->net_ns);
++    if(ns->dev_ns)
++        put_dev_ns(ns->dev_ns);
+ 	kmem_cache_free(nsproxy_cachep, ns);
+ }
+diff --git a/kernel/Makefile b/kernel/Makefile
+index 17ea6d4..c7fdb88 100644
+--- a/kernel/Makefile
++++ b/kernel/Makefile
+@@ -56,6 +56,7 @@ obj-$(CONFIG_CPUSETS) += cpuset.o
+ obj-$(CONFIG_UTS_NS) += utsname.o
+ obj-$(CONFIG_USER_NS) += user_namespace.o
+ obj-$(CONFIG_PID_NS) += pid_namespace.o
++obj-$(CONFIG_DEV_NS) += dev_namespace.o
+ obj-$(CONFIG_IKCONFIG) += configs.o
+ obj-$(CONFIG_RESOURCE_COUNTERS) += res_counter.o
+ obj-$(CONFIG_SMP) += stop_machine.o
+diff --git a/init/Kconfig b/init/Kconfig
+index 2081a4d..f50800c 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1216,6 +1216,16 @@ config NET_NS
+ 	  Allow user space to create what appear to be multiple instances
+ 	  of the network stack.
+ 
++config DEV_NS
++    bool "Device Namespaces (EXPERIMENTAL)"
++    default n
++    depends on PID_NS
++    help
++    Support device driver namespaces. This allows drivers to multiplex
++    access to its physical or logical resources. A device namespace has
++    a one-to-one relationship with a PID namespace currentlly, but this
++    will likely change in the future.
++
+ endif # NAMESPACES
+ 
+ config SCHED_AUTOGROUPdiff --git a/include/linux/nsproxy.h b/include/linux/nsproxy.h
+index cc37a55..bad297b 100644
+--- a/include/linux/nsproxy.h
++++ b/include/linux/nsproxy.h
+@@ -29,6 +29,7 @@ struct nsproxy {
+ 	struct mnt_namespace *mnt_ns;
+ 	struct pid_namespace *pid_ns;
+ 	struct net 	     *net_ns;
++	struct dev_namespace *dev_ns;
+ };
+ extern struct nsproxy init_nsproxy;

@@ -1,0 +1,39 @@
+project system/netd/
+diff --git a/BandwidthController.cpp b/BandwidthController.cpp
+index 664211d..2641b42 100644
+--- a/BandwidthController.cpp
++++ b/BandwidthController.cpp
+@@ -137,7 +137,7 @@ const char *BandwidthController::IPT_SETUP_COMMANDS[] = {
+ };
+ 
+ const char *BandwidthController::IPT_BASIC_ACCOUNTING_COMMANDS[] = {
+-    "-A bw_INPUT -m owner --socket-exists", /* This is a tracking rule. */
++    //"-A bw_INPUT -m owner --socket-exists", /* This is a tracking rule. */
+ 
+     "-A bw_OUTPUT -m owner --socket-exists", /* This is a tracking rule. */
+ 
+diff --git a/MDnsSdListener.cpp b/MDnsSdListener.cpp
+index 4944e18..e37ed76 100644
+--- a/MDnsSdListener.cpp
++++ b/MDnsSdListener.cpp
+@@ -43,15 +43,15 @@
+ 
+ MDnsSdListener::MDnsSdListener() :
+                  FrameworkListener("mdns", true) {
+-    Monitor *m = new Monitor();
+-    registerCmd(new Handler(m, this));
++//    Monitor *m = new Monitor();
++//    registerCmd(new Handler(m, this));
+ }
+ 
+ MDnsSdListener::Handler::Handler(Monitor *m, MDnsSdListener *listener) :
+    NetdCommand("mdnssd") {
+-   if (DBG) ALOGD("MDnsSdListener::Hander starting up");
+-   mMonitor = m;
+-   mListener = listener;
++//   if (DBG) ALOGD("MDnsSdListener::Hander starting up");
++//   mMonitor = m;
++//   mListener = listener;
+ }
+ 
+ MDnsSdListener::Handler::~Handler() {}

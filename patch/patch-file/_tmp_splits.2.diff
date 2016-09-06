@@ -1,0 +1,96 @@
+project frameworks/base/
+diff --git a/services/java/com/android/server/ConnectivityService.java b/services/java/com/android/server/ConnectivityService.java
+index 41a0e6b..3d48b06 100644
+--- a/services/java/com/android/server/ConnectivityService.java
++++ b/services/java/com/android/server/ConnectivityService.java
+@@ -734,8 +734,8 @@ public class ConnectivityService extends IConnectivityManager.Stub {
+                     return BluetoothTetheringDataTracker.getInstance();
+                 case TYPE_WIMAX:
+                     return makeWimaxStateTracker(mContext, mTrackerHandler);
+-                case TYPE_ETHERNET:
+-                    return EthernetDataTracker.getInstance();
++               // case TYPE_ETHERNET:
++               //     return EthernetDataTracker.getInstance();
+                 default:
+                     throw new IllegalArgumentException(
+                             "Trying to create a NetworkStateTracker for an unknown radio type: "
+diff --git a/services/java/com/android/server/NativeDaemonConnector.java b/services/java/com/android/server/NativeDaemonConnector.java
+index 417d6d8..e4aa664 100644
+--- a/services/java/com/android/server/NativeDaemonConnector.java
++++ b/services/java/com/android/server/NativeDaemonConnector.java
+@@ -88,7 +88,8 @@ final class NativeDaemonConnector implements Runnable, Handler.Callback, Watchdo
+                 listenToSocket();
+             } catch (Exception e) {
+                 loge("Error in NativeDaemonConnector: " + e);
+-                SystemClock.sleep(5000);
++                //SystemClock.sleep(5000);
++                SystemClock.sleep(100);
+             }
+         }
+     }
+diff --git a/services/java/com/android/server/NetworkManagementService.java b/services/java/com/android/server/NetworkManagementService.java
+index 72fce62..68a6ce1 100644
+--- a/services/java/com/android/server/NetworkManagementService.java
++++ b/services/java/com/android/server/NetworkManagementService.java
+@@ -93,7 +93,7 @@ import java.util.concurrent.CountDownLatch;
+ public class NetworkManagementService extends INetworkManagementService.Stub
+         implements Watchdog.Monitor {
+     private static final String TAG = "NetworkManagementService";
+-    private static final boolean DBG = false;
++    private static final boolean DBG = true;
+     private static final String NETD_TAG = "NetdConnector";
+     private static final String NETD_SOCKET_NAME = "netd";
+ 
+diff --git a/services/java/com/android/server/SystemServer.java b/services/java/com/android/server/SystemServer.java
+index a42cbcf..3c38f05 100644
+--- a/services/java/com/android/server/SystemServer.java
++++ b/services/java/com/android/server/SystemServer.java
+@@ -356,7 +356,7 @@ class ServerThread {
+         LockSettingsService lockSettings = null;
+         DreamManagerService dreamy = null;
+         AssetAtlasService atlas = null;
+-        PrintManagerService printManager = null;
++        //PrintManagerService printManager = null;
+         MediaRouterService mediaRouter = null;
+ 
+         // Bring up services needed for UI.
+@@ -799,6 +799,7 @@ class ServerThread {
+                 reportWtf("starting IdleMaintenanceService", e);
+             }
+ 
++	    /*
+             try {
+                 Slog.i(TAG, "Print Service");
+                 printManager = new PrintManagerService(context);
+@@ -806,6 +807,7 @@ class ServerThread {
+             } catch (Throwable e) {
+                 reportWtf("starting Print Service", e);
+             }
++	    */
+ 
+             if (!disableNonCoreServices) {
+                 try {
+@@ -927,7 +929,7 @@ class ServerThread {
+         final AssetAtlasService atlasF = atlas;
+         final InputManagerService inputManagerF = inputManager;
+         final TelephonyRegistry telephonyRegistryF = telephonyRegistry;
+-        final PrintManagerService printManagerF = printManager;
++        //final PrintManagerService printManagerF = printManager;
+         final MediaRouterService mediaRouterF = mediaRouter;
+ 
+         // We now tell the activity manager it is okay to run third party
+@@ -1071,11 +1073,13 @@ class ServerThread {
+                     reportWtf("Notifying TelephonyRegistry running", e);
+                 }
+ 
++		/*
+                 try {
+                     if (printManagerF != null) printManagerF.systemRuning();
+                 } catch (Throwable e) {
+                     reportWtf("Notifying PrintManagerService running", e);
+                 }
++		*/
+ 
+                 try {
+                     if (mediaRouterF != null) mediaRouterF.systemRunning();
+

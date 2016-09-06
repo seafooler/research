@@ -1,0 +1,31 @@
+project dalvik/
+diff --git a/vm/analysis/DexPrepare.cpp b/vm/analysis/DexPrepare.cpp
+index e8112d5..af5ff03 100644
+--- a/vm/analysis/DexPrepare.cpp
++++ b/vm/analysis/DexPrepare.cpp
+@@ -1314,6 +1314,7 @@ bool dvmCheckOptHeaderAndDependencies(int fd, bool sourceAvail, u4 modWhen,
+         }
+ 
+         storedStrLen = read4LE(&ptr);
++        /*
+         if (len != storedStrLen ||
+             strcmp(cacheFileName, (const char*) ptr) != 0)
+         {
+@@ -1321,13 +1322,16 @@ bool dvmCheckOptHeaderAndDependencies(int fd, bool sourceAvail, u4 modWhen,
+                 cacheFileName, ptr);
+             goto bail;
+         }
++        */
+ 
+         ptr += storedStrLen;
+ 
++        /*
+         if (memcmp(signature, ptr, kSHA1DigestLen) != 0) {
+             ALOGI("DexOpt: mismatch dep signature for '%s'", cacheFileName);
+             goto bail;
+         }
++        */
+         ptr += kSHA1DigestLen;
+ 
+         ALOGV("DexOpt: dep match on '%s'", cacheFileName);
+
