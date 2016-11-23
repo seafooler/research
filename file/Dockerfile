@@ -42,9 +42,9 @@ ENV PATH $PATH:$ANDROID_HOME/platform-tools
 ENV JAVA_HOME /usr/lib/jvm/java-7-oracle
 
 # Install latest android tools and system images
-RUN ( sleep 4 && while [ 1 ]; do sleep 1; echo y; done ) | android update sdk --no-ui --force -a --filter \
-    platform-tool,android-19,android-22,sys-img-x86-android-19,sys-img-x86-android-22 && \
-    echo "y" | android update adb
+#RUN ( sleep 4 && while [ 1 ]; do sleep 1; echo y; done ) | android update sdk --no-ui --force -a --filter \
+#    platform-tool,android-19,android-22,sys-img-x86-android-19,sys-img-x86-android-22 && \
+#    echo "y" | android update adb
 
 # Create fake keymap file
 RUN mkdir /usr/local/android-sdk/tools/keymaps && \
